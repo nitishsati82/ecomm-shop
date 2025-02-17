@@ -1,0 +1,47 @@
+.rating-box {
+  position:relative;
+  vertical-align: middle;
+  font-size: 3/3em;
+  font-family: FontAwesome;
+  display:inline-block;
+  color: lighten(@grayLight, 25%);
+
+  &:before{
+    content: "\f006 \f006 \f006 \f006 \f006";
+  }
+
+  .rating {
+    position: absolute;
+    left:0;
+    top:0;
+    white-space:nowrap;
+    overflow:hidden;
+    color: #F68127;
+    &:before {
+      content: "\f005 \f005 \f005 \f005 \f005";
+    }
+  }
+}
+
+.ratings {
+    position: relative;
+    vertical-align: middle;
+    display: inline-block;
+    color: #b1b1b1;
+    overflow: hidden;
+    margin: -19px 0 0 15px;
+}
+.full-stars {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: orange;
+}
+.empty-stars:before, .full-stars:before {
+  font-family: FontAwesome;
+    content:"\f005 \f005 \f005 \f005 \f005";
+    margin: 5px;
+    font-size: 1em;
+}

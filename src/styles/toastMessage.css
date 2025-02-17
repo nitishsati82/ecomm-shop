@@ -1,0 +1,40 @@
+/* Success template */
+.k-notification-success-msgs.k-group {
+    background: rgba(0%,60%,0%,.7) !important;
+    color: #fff;
+}
+
+.success-msgs {
+        min-width: 285px;
+}
+.success-msgs h3 {
+    font-size: 12px;
+    padding: 15px;  
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+.success-msgs img {
+    float: left;
+    margin: 0px 5px 0 5px;
+}
+
+  /* Error template */
+.k-notification-wrong-pass.k-group {
+    background: rgba(100%,0%,0%,.7) !important;
+    color: #fff;
+}
+.wrong-pass {
+    min-width: 285px;
+}
+.wrong-pass h3 {
+    /* font-size: 11px; */
+    /* line-height: 2 !important; */
+    font-size: 12px;
+    padding: 15px;  
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+.wrong-pass img {
+    float: left;
+    margin: 0px 5px 0 5px;
+}
