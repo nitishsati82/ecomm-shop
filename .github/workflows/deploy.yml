@@ -1,0 +1,25 @@
+name: AWS EC2 Deployment React App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      run: docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
+
+    - name: Build docker image
+      run: docker build -t nitishsati8/ecomm-shop:latest .
+    - name: Push docker image
+      run: docker push nitishsati8/ecomm-shop:latest
