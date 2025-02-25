@@ -21,5 +21,30 @@ jobs:
 
     - name: Build docker image
       run: docker build -t nitishsati8/ecomm-shop:latest .
+
     - name: Push docker image
       run: docker push nitishsati8/ecomm-shop:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+    - name: Check Docker Installation
+      run: |
+        if ! [ -x "$(command -v docker)" ]; then
+          echo "Error: Docker is not installed." >&2
+          exit 1
+        fi
+
+    - name: Pull image from docker hub
+      run: sudo docker pull nitishsati8/ecomm-shop:latest
+
+    - name: Delete existing container
+      run: |
+        if [ "$(sudo docker ps -aq -f name=ecomm-shop)" ]; then
+          sudo docker rm -f ecomm-shop
+        fi
+
+    - name: Run docker container
+      run: sudo docker run -d -p 80:5000 --name ecomm-shop nitishsati8/ecomm-shop:latest
