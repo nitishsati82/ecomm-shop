@@ -5,7 +5,7 @@ const Footer = () => (
         <div id="footer">
             <hr style={{ marginTop: '5px', marginBottom: '5px' }} />
             <div className="copyrights">
-                <span>&copy;225. All Rights Reserved. | Powered by 
+                <span>&copy;2025. All Rights Reserved. | Powered by 
                     <a href="#" target="_blank" rel="noopener noreferrer">Online Shopping Technologies Private Limited</a> | 
                     <a href="#disclaimerModal" data-toggle="modal">Disclaimer</a>
                 </span>

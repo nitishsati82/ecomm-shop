@@ -1,66 +1,96 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Navbar, Nav, Form, FormControl, Button, Container, Modal, Badge } from "react-bootstrap";
+import { Navbar, Nav, Form, FormControl, Button, Container, Modal, Badge, Dropdown } from "react-bootstrap";
 import { FaUser, FaSignInAlt, FaShoppingCart } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { CartContext } from "../context/CartContext";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "react-oidc-context";  // Use the OIDC context to get the user info
 import logo from './img/logo.png';
+
 function Header() {
   const [navLinks, setNavLinks] = useState([]);
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
-  const [showSignInModal, setShowSignInModal] = useState(false);
-
   const [guid, setGuid] = useState(null);
 
-
-  // Access cart data from CartContext
-  const { cart } = useContext(CartContext);
+  // Access cart data from useCart hook
+  const { getTotalItems } = useCart();
 
   // Calculate total quantity of items in the cart
-  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+  const totalItems = getTotalItems();
 
 
-const fetchGuid = async () => {
-  try {
-      const response = await fetch(
-        `http://13.233.103.48:8080/generate-guid`
-      );
+  // Calculate total quantity of items in the cart
+  //const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  const fetchGuid = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/user/generate-guid`);
       const data = await response.text();
-      console.log("response"+data);
+      console.log("response" + data);
       setGuid(data);
-  } catch (error) {
+    } catch (error) {
       console.error('Error fetching GUID:', error);
-  }
-};
+    }
+  };
 
-useEffect(() => {
-  fetchGuid();
-}, []);
+  useEffect(() => {
+    fetchGuid();
+  }, []);
 
-useEffect(() => {
-  if (guid !== null) {
-    const staticLinks = [
-      "Home",
-      "Mobile Phones",
-      "Home Appliances",
-      "Kitchen Appliances",
-      "Laptop & Computers",
-      "Televisions",
-      "Audio & Video",
-      "Personal Care",
-    ];
+  useEffect(() => {
+    if (guid !== null) {
+      const staticLinks = [
+        { name: "Home", path: "/" },
+        { name: "Mobile Phones", path: "/mobile-phones" },
+        { name: "Home Appliances", path: "/home-appliances" },
+        { name: "Kitchen Appliances", path: "/kitchen-appliances" },
+        { name: "Laptop & Computers", path: "/laptops-computers" },
+        { name: "Televisions", path: "/televisions" },
+        { name: "Audio & Video", path: "/audio-video" },
+        { name: "Personal Care", path: "/personal-care" },
+      ];
+      // Add GUID to the navigation links once it’s available
+      staticLinks.push({ name: `GUID::${guid}`, path: "#" });
+      // Update navigation links
+      setNavLinks(staticLinks);
+    }
+  }, [guid]);
 
-    // Add GUID to the navigation links once it’s available
-    staticLinks.push(`GUID::${guid}`);
+  const auth = useAuth();
 
-    // Update navigation links
-    setNavLinks(staticLinks);
-  }
-}, [guid]);
+  // Function to get user info (this will vary depending on how you use the OIDC context or AWS SDK)
+  const [userDetails, setUserDetails] = useState(null);
 
-  const handleShowSignUp = () => setShowSignUpModal(true);
-  const handleCloseSignUp = () => setShowSignUpModal(false);
-  const handleShowSignIn = () => setShowSignInModal(true);
-  const handleCloseSignIn = () => setShowSignInModal(false);
+  // Method to extract and set user details
+  const setUserDetailsFromAuth = (user) => {
+    if (user) {
+      const username = user.profile["cognito:username"];
+      const name = user.profile.name;
+      const email = user.profile.email;
+      const phoneNumber = user.profile.phone_number;
+      console.log(name);
+      // Update state with the extracted user details
+      setUserDetails({
+        name,
+        email,
+        phoneNumber,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      const userInfo = auth.user;  // This assumes the OIDC context provides user info like name and email
+      setUserDetailsFromAuth(userInfo);
+    }
+  }, [auth.isAuthenticated, auth.user]);
+
+  // Sign out logic
+  const signOutRedirect = () => {
+    auth.removeUser();
+    const clientId = "7gp6ln0g9gek7h4nkjru0d98tm";
+    const logoutUri = "http://localhost:3000/";
+    const cognitoDomain = "https://ap-south-1kbml7t4jr.auth.ap-south-1.amazoncognito.com";
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+  };
 
   return (
     <>
@@ -85,12 +115,23 @@ useEffect(() => {
 
           {/* Sign Up, Sign In, and Cart */}
           <Nav>
-            <Nav.Link onClick={handleShowSignUp} className="d-flex align-items-center">
-              <FaUser className="me-1" /> Sign Up
-            </Nav.Link>
-            <Nav.Link onClick={handleShowSignIn} className="d-flex align-items-center">
-              <FaSignInAlt className="me-1" /> Sign In
-            </Nav.Link>
+            {!auth.isAuthenticated ? (
+              <Nav.Link onClick={auth.signinRedirect} className="d-flex align-items-center">
+                <FaSignInAlt className="me-1" /> Sign In
+              </Nav.Link>
+            ) : (
+              <Dropdown align="end">
+                <Dropdown.Toggle variant="link" id="dropdown-user" className="d-flex align-items-center">
+                  <FaUser className="me-1" /> Hi, {userDetails ? userDetails.name : 'User'}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  <Dropdown.Item as={Link} to="/profile">Profile</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/orders">Orders</Dropdown.Item>
+                  <Dropdown.Item onClick={() => signOutRedirect()}>Sign Out</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
             <Nav.Link as={Link} to="/cart" className="d-flex align-items-center position-relative">
               <FaShoppingCart className="me-1" />
               Cart
@@ -106,72 +147,16 @@ useEffect(() => {
 
       {/* Secondary Navbar for Dynamic Links */}
       <Navbar bg="dark" variant="dark">
-        <Container>
+      <Container>
           <Nav className="mx-auto">
             {navLinks.map((link, index) => (
-              <Nav.Link href="#" key={index} className="text-white">
-                {link}
+              <Nav.Link as={Link} to={link.path} key={index} className="text-white">
+                {link.name}
               </Nav.Link>
             ))}
           </Nav>
         </Container>
       </Navbar>
-
-      {/* Sign-Up Modal */}
-      <Modal show={showSignUpModal} onHide={handleCloseSignUp}>
-        <Modal.Header closeButton>
-          <Modal.Title>New User Registration</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter your name" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control type="email" placeholder="Enter your email" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Mobile No</Form.Label>
-              <Form.Control type="text" placeholder="Enter your mobile number" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Enter password" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Re-Enter Password</Form.Label>
-              <Form.Control type="password" placeholder="Re-enter password" />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              Register
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-
-      {/* Sign-In Modal */}
-      <Modal show={showSignInModal} onHide={handleCloseSignIn}>
-        <Modal.Header closeButton>
-          <Modal.Title>Sign In</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control type="email" placeholder="Enter your email" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Enter your password" />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              Sign In
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
     </>
   );
 }

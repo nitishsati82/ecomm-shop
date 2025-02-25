@@ -1,63 +1,46 @@
-import React, { useContext } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import { CartContext } from '../context/CartContext';
+import React from 'react';
+import { Container, Table, Button } from 'react-bootstrap';
+import { useCart } from '../context/CartContext'; // Import the useCart hook from context
 
-function Cart() {
-  const { cart, addToCart, removeFromCart } = useContext(CartContext);
-
-  const handleAdd = (product) => {
-    addToCart(product, 1);
-  };
-
-  const handleRemove = (product) => {
-    removeFromCart(product);
-  };
-
-  const totalPrice = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+const Cart = () => {
+  const { cart, removeFromCart, clearCart } = useCart();
 
   return (
-    <Container className="my-5">
-      <h1>Your Cart</h1>
-      {cart.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
+    <Container style={{ padding: '20px' }}>
+      <h2>Shopping Cart</h2>
+      {cart.items.length > 0 ? (
         <>
-          {cart.map((item) => (
-            <Row key={item.id} className="mb-3">
-              <Col md={4}>
-                <img src={item.image} alt={item.name} className="img-fluid" />
-              </Col>
-              <Col md={4}>
-                <h4>{item.name}</h4>
-                <p>{item.description}</p>
-                <p>Price: ${item.price}</p>
-                <p>Quantity: {item.quantity}</p>
-              </Col>
-              <Col md={4} className="d-flex align-items-center">
-                <Button
-                  variant="success"
-                  className="me-2"
-                  onClick={() => handleAdd(item)}
-                >
-                  +
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={() => handleRemove(item)}
-                >
-                  -
-                </Button>
-              </Col>
-            </Row>
-          ))}
-          <h3>Total: ${totalPrice.toFixed(2)}</h3>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cart.items.map((item) => (
+                <tr key={item.productId}>
+                  <td>{item.itemName}</td>
+                  <td>{item.quantity}</td>
+                  <td>₹{item.price}</td>
+                  <td>₹{item.quantity * item.price}</td> {/* Display calculated total */}
+                  <td>
+                    <Button variant="danger" onClick={() => removeFromCart(item.productId)}>Remove</Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <Button variant="danger" onClick={clearCart}>Clear Cart</Button>
         </>
+      ) : (
+        <p>Your cart is empty</p>
       )}
     </Container>
   );
-}
+};
 
 export default Cart;

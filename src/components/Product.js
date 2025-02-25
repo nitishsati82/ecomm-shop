@@ -6,6 +6,7 @@ import { CartContext } from "../context/CartContext";
 function Product() {
 
   const { addToCart } = useContext(CartContext);
+  //const { addToCart } = useCart(); // Destructure addToCart from the custom hook
 
   const [products, setProducts] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -21,7 +22,7 @@ function Product() {
   const fetchProducts = async (page) => {
     try {
       const response = await fetch(
-        `http://13.233.103.48:8080/api/products?page=${page}&size=${itemsPerPage}`
+        `http://localhost:8082/product/api/products?page=${page}&size=${itemsPerPage}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch products");
@@ -59,7 +60,13 @@ function Product() {
                 <Card.Text>{product.description}</Card.Text>
                 <Card.Text className="fw-bold">{product.price}</Card.Text>
                 <div className="d-flex justify-content-between">
-                  <Button variant="primary" className="me-2" onClick={() => addToCart(product,1)}>
+                  <Button variant="primary" className="me-2" onClick={() => addToCart({
+            productId: product.id,
+            itemName: product.name,
+            price: product.price,
+            quantity: 1, // Default quantity
+            amount: product.price, // Initial amount
+          })}>
                     Add to Cart
                   </Button>
                   <Button
