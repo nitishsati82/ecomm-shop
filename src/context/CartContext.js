@@ -93,7 +93,6 @@ export const CartProvider = ({ children }) => {
   };
 
   const addToCart = (item) => {
-    alert("Hi");
     if (isItemExist(item.productId)) {
       updateItem(item);
     } else {
