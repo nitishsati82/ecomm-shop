@@ -22,7 +22,7 @@ function Header() {
 
   const fetchGuid = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/user/generate-guid`);
+      const response = await fetch(`http://13.200.154.116:8083/user/generate-guid`);
       const data = await response.text();
       console.log("response" + data);
       setGuid(data);
