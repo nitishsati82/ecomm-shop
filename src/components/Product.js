@@ -1,13 +1,10 @@
-import React, { useState, useEffect,useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { CartContext } from "../context/CartContext";
 
 function Product() {
-
   const { addToCart } = useContext(CartContext);
-  //const { addToCart } = useCart(); // Destructure addToCart from the custom hook
-
   const [products, setProducts] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -17,7 +14,7 @@ function Product() {
   const handleProductClick = (product) => {
     navigate(`/product-details/${product.id}`, { state: product });
   };
-  
+
   // Fetch products from Java API
   const fetchProducts = async (page) => {
     try {
@@ -54,19 +51,25 @@ function Product() {
         {products.map((product) => (
           <Col md={4} className="mb-4" key={product.id}>
             <Card>
-              <Card.Img variant="top" src={product.image} />
+              <Card.Img variant="top" src={product.imgUrl} />
               <Card.Body>
                 <Card.Title>{product.name}</Card.Title>
                 <Card.Text>{product.description}</Card.Text>
                 <Card.Text className="fw-bold">{product.price}</Card.Text>
                 <div className="d-flex justify-content-between">
-                  <Button variant="primary" className="me-2" onClick={() => addToCart({
-            productId: product.id,
-            itemName: product.name,
-            price: product.price,
-            quantity: 1, // Default quantity
-            amount: product.price, // Initial amount
-          })}>
+                  <Button
+                    variant="primary"
+                    className="me-2"
+                    onClick={() =>
+                      addToCart({
+                        productId: product.id,
+                        itemName: product.name,
+                        price: product.price,
+                        quantity: 1, // Default quantity
+                        amount: product.price, // Initial amount
+                      })
+                    }
+                  >
                     Add to Cart
                   </Button>
                   <Button

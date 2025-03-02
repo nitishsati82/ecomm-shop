@@ -28,7 +28,7 @@ function ProductDetails() {
     <Container className="my-5">
       <Row>
         <Col md={6}>
-          <img src={product.image} alt={product.name} className="img-fluid" />
+          <img src={product.imgUrl} alt={product.name} className="img-fluid" style={{ width: "50%" }}/>
         </Col>
         <Col md={6}>
           <h1>{product.name}</h1>
