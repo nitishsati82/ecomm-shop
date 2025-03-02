@@ -19,14 +19,8 @@ RUN npm run build
 # Install a simple HTTP server to serve the built app
 RUN npm install -g serve
 
-# Copy the self-signed certificate
-COPY selfsigned.key /etc/ssl/private/selfsigned.key
-COPY selfsigned.crt /etc/ssl/certs/selfsigned.crt
-
-# Expose port 443 for HTTPS
-EXPOSE 443
-# Set environment variable to bind to 0.0.0.0
-ENV HOST 0.0.0.0
+# Expose the port the app runs on
+EXPOSE 80
 
 # Command to run the application
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["serve", "-s", "build", "-l", "3000", "--host", "0.0.0.0"]
