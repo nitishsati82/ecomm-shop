@@ -87,7 +87,7 @@ function Header() {
   const signOutRedirect = () => {
     auth.removeUser();
     const clientId = "7gp6ln0g9gek7h4nkjru0d98tm";
-    const logoutUri = "https://ecomtry.infy.uk/";
+    const logoutUri = "http://13.235.208.227/";
     const cognitoDomain = "https://ap-south-1kbml7t4jr.auth.ap-south-1.amazoncognito.com";
     window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
