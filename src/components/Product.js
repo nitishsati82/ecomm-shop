@@ -19,7 +19,7 @@ function Product() {
   const fetchProducts = async (page) => {
     try {
       const response = await fetch(
-        `http://13.200.154.116:8083/product/api/products?page=${page}&size=${itemsPerPage}`
+        `http://localhost:8080/product/api/products?page=${page}&size=${itemsPerPage}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch products");
