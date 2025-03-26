@@ -1,0 +1,59 @@
+.custom-logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+
+.logo-text {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.logo-icon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+.logo-slogan {
+  font-size: 0.75rem;
+  color: #20c997; /* Teal color */
+}
+
+.navbar-nav .nav-link {
+  color: #ffffff !important; /* Ensure text is white */
+}
+
+.dropdown-toggle {
+  color: #ffffff !important; /* Ensure dropdown text is white */
+}
+
+.form-control {
+  border-radius: 0.25rem; /* Slightly rounded corners */
+}
+
+.btn-outline-light {
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.btn-outline-light:hover {
+  background-color: #ffffff;
+  color: #20c997; /* Teal color */
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: #20c997 !important; /* Teal color on hover */
+}
+
+.custom-navbar {
+  background-color: #343a40; /* Dark gray color */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1030; /* Ensure it stays on top of other elements */
+}
+
+.custom-navbar + .navbar {
+  margin-top: 56px; /* Adjust this value based on the height of your navbar */
+}

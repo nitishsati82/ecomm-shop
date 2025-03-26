@@ -1,0 +1,53 @@
+.custom-footer {
+  background-color: #343a40; /* Dark gray color */
+  color: #ffffff;
+  padding: 20px 0;
+}
+
+.footer-divider {
+  border-top: 1px solid #20c997; /* Teal color */
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.copyrights {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.social-media-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.social-media-list li a {
+  color: #ffffff;
+  transition: color 0.3s;
+}
+
+.social-media-list li a:hover {
+  color: #20c997; /* Teal color */
+}
+
+.fb-color:hover {
+  color: #3b5998; /* Facebook color */
+}
+
+.twitter-color:hover {
+  color: #1da1f2; /* Twitter color */
+}
+
+.google-color:hover {
+  color: #db4437; /* Google Plus color */
+}
+
+.pinterest-color:hover {
+  color: #bd081c; /* Pinterest color */
+}
+
+.circleBase:hover {
+  color: #20c997; /* Teal color */
+}

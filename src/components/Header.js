@@ -1,29 +1,25 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Navbar, Nav, Form, FormControl, Button, Container, Modal, Badge, Dropdown } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Navbar, Nav, Form, FormControl, Button, Container, Badge, Dropdown } from "react-bootstrap";
 import { FaUser, FaSignInAlt, FaShoppingCart } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { useAuth } from "react-oidc-context";  // Use the OIDC context to get the user info
-import logo from './img/logo.png';
+import { useAuth } from "react-oidc-context";
+import './Style.css'; // Import custom CSS
 
 function Header() {
   const [navLinks, setNavLinks] = useState([]);
   const [guid, setGuid] = useState(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [products, setProducts] = useState([]);
+  const [query, setQuery] = useState(""); // State to store search query
+  const navigate = useNavigate();
 
-  // Access cart data from useCart hook
   const { getTotalItems } = useCart();
-
-  // Calculate total quantity of items in the cart
   const totalItems = getTotalItems();
-
-
-  // Calculate total quantity of items in the cart
-  //const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   const fetchGuid = async () => {
     try {
-      const response = await fetch(`http://13.200.154.116:8083/user/generate-guid`);
-      const data = await response.text();
+      const data = "2797901a-6378-4107-bf4b-3cb2fd132ce6";
       console.log("response" + data);
       setGuid(data);
     } catch (error) {
@@ -43,23 +39,18 @@ function Header() {
         { name: "Home Appliances", path: "/home-appliances" },
         { name: "Kitchen Appliances", path: "/kitchen-appliances" },
         { name: "Laptop & Computers", path: "/laptops-computers" },
-        { name: "Televisions", path: "/televisions" },
+        { name: "Kids Care", path: "/kids-care" },
         { name: "Audio & Video", path: "/audio-video" },
         { name: "Personal Care", path: "/personal-care" },
       ];
-      // Add GUID to the navigation links once it’s available
       staticLinks.push({ name: `GUID::${guid}`, path: "#" });
-      // Update navigation links
       setNavLinks(staticLinks);
     }
   }, [guid]);
 
   const auth = useAuth();
-
-  // Function to get user info (this will vary depending on how you use the OIDC context or AWS SDK)
   const [userDetails, setUserDetails] = useState(null);
 
-  // Method to extract and set user details
   const setUserDetailsFromAuth = (user) => {
     if (user) {
       const username = user.profile["cognito:username"];
@@ -67,7 +58,6 @@ function Header() {
       const email = user.profile.email;
       const phoneNumber = user.profile.phone_number;
       console.log(name);
-      // Update state with the extracted user details
       setUserDetails({
         name,
         email,
@@ -78,12 +68,11 @@ function Header() {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
-      const userInfo = auth.user;  // This assumes the OIDC context provides user info like name and email
+      const userInfo = auth.user;
       setUserDetailsFromAuth(userInfo);
     }
   }, [auth.isAuthenticated, auth.user]);
 
-  // Sign out logic
   const signOutRedirect = () => {
     auth.removeUser();
     const clientId = "7gp6ln0g9gek7h4nkjru0d98tm";
@@ -92,39 +81,137 @@ function Header() {
     window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
 
+  const handleSearch = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const response = await fetch(`http://13.200.154.116:8081/product/search?query=${query}`);
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch search results: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      console.log("Fetched search results:", data);
+  
+      // Validate API response structure
+      if (!data || !Array.isArray(data.products)) {
+        console.error("Invalid data structure:", data);
+        return;
+      }
+  
+      const products = data.products;
+  
+      // Fetch stock count for each product
+      const updatedProducts = await Promise.all(
+        products.map(async (product) => {
+          try {
+            const stockResponse = await fetch(`http://13.235.208.227:8081/inventory/check/${product.id}`);
+            if (!stockResponse.ok) {
+              throw new Error(`Failed to fetch stock for product ID ${product.id}`);
+            }
+            const stockCount = await stockResponse.json();
+            return { ...product, stockCount };
+          } catch (stockError) {
+            console.error("Error fetching stock count:", stockError);
+            return { ...product, stockCount: 0 }; // Default stock count if API fails
+          }
+        })
+      );
+  
+      setProducts(updatedProducts);
+      setTotalPages(data.totalPages || 1);
+  
+      // Navigate with updated product list
+      navigate("/", { state: { searchResults: updatedProducts } });
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+  
+  const handleCategoryClick = async (category) => {
+    if (category === "Home") {
+      navigate("/");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://13.200.154.116:8081/product/search?query=${category}`);
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch category products: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      console.log(`Fetched products for category "${category}":`, data);
+  
+      // Validate API response structure
+      if (!data || !Array.isArray(data.products)) {
+        console.error("Invalid data structure:", data);
+        return;
+      }
+  
+      const products = data.products;
+  
+      // Fetch stock count for each product
+      const updatedProducts = await Promise.all(
+        products.map(async (product) => {
+          try {
+            const stockResponse = await fetch(`http://13.235.208.227:8081/inventory/check/${product.id}`);
+            if (!stockResponse.ok) {
+              throw new Error(`Failed to fetch stock for product ID ${product.id}`);
+            }
+            const stockCount = await stockResponse.json();
+            return { ...product, stockCount };
+          } catch (stockError) {
+            console.error("Error fetching stock count:", stockError);
+            return { ...product, stockCount: 0 }; // Default stock count if API fails
+          }
+        })
+      );
+  
+      setProducts(updatedProducts);
+      setTotalPages(data.totalPages || 1);
+  
+      // Navigate with updated product list
+      navigate("/", { state: { searchResults: updatedProducts } });
+    } catch (error) {
+      console.error("Error fetching category products:", error);
+    }
+  };
+  
   return (
     <>
-      {/* Main Navbar */}
-      <Navbar bg="light" expand="lg" className="mb-3">
+      <Navbar bg="primary" expand="lg" className="mb-3 custom-navbar">
         <Container>
-          {/* Logo */}
-          <Navbar.Brand href="#">
-            <img src={logo} alt="Logo" height="50" />
+          <Navbar.Brand as={Link} to="/">
+            <div className="custom-logo">
+              <span className="logo-text">AmCart</span>
+              <FaShoppingCart className="logo-icon" />
+              <span className="logo-slogan">Your shopping simplified</span>
+            </div>
           </Navbar.Brand>
-
-          {/* Search Bar */}
-          <Form className="d-flex mx-auto" style={{ flex: 1, maxWidth: "500px" }}>
+          <Form className="d-flex mx-auto" style={{ flex: 1, maxWidth: "500px" }} onSubmit={handleSearch}>
             <FormControl
               type="search"
               placeholder="Search Products"
               className="me-2"
               aria-label="Search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
             />
-            <Button variant="outline-success">Search</Button>
+            <Button variant="outline-light" type="submit">Search</Button>
           </Form>
-
-          {/* Sign Up, Sign In, and Cart */}
           <Nav>
             {!auth.isAuthenticated ? (
-              <Nav.Link onClick={auth.signinRedirect} className="d-flex align-items-center">
+              <Nav.Link onClick={auth.signinRedirect} className="d-flex align-items-center text-white">
                 <FaSignInAlt className="me-1" /> Sign In
               </Nav.Link>
             ) : (
               <Dropdown align="end">
-                <Dropdown.Toggle variant="link" id="dropdown-user" className="d-flex align-items-center">
+                <Dropdown.Toggle variant="link" id="dropdown-user" className="d-flex align-items-center text-white">
                   <FaUser className="me-1" /> Hi, {userDetails ? userDetails.name : 'User'}
                 </Dropdown.Toggle>
-
                 <Dropdown.Menu>
                   <Dropdown.Item as={Link} to="/profile">Profile</Dropdown.Item>
                   <Dropdown.Item as={Link} to="/orders">Orders</Dropdown.Item>
@@ -132,7 +219,7 @@ function Header() {
                 </Dropdown.Menu>
               </Dropdown>
             )}
-            <Nav.Link as={Link} to="/cart" className="d-flex align-items-center position-relative">
+            <Nav.Link as={Link} to="/cart" className="d-flex align-items-center position-relative text-white">
               <FaShoppingCart className="me-1" />
               Cart
               {totalItems > 0 && (
@@ -144,13 +231,17 @@ function Header() {
           </Nav>
         </Container>
       </Navbar>
-
-      {/* Secondary Navbar for Dynamic Links */}
       <Navbar bg="dark" variant="dark">
-      <Container>
+        <Container>
           <Nav className="mx-auto">
             {navLinks.map((link, index) => (
-              <Nav.Link as={Link} to={link.path} key={index} className="text-white">
+              <Nav.Link
+                as={Link}
+                to={link.path}
+                key={index}
+                className="text-white"
+                onClick={() => handleCategoryClick(link.name)}
+              >
                 {link.name}
               </Nav.Link>
             ))}

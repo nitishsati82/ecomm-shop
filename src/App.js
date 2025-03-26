@@ -7,6 +7,7 @@ import ProductDetails from "./components/ProductDetails";
 import Profile from './components/Profile';
 import Orders from './components/Orders';
 import OrderDetails from './components/OrderDetails';
+import Checkout from './components/Checkout';
 
 import Cart from "./components/Cart";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -22,6 +23,7 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/order/:orderId" element={<OrderDetails />} /> {/* Dynamic Route */}
       </Routes>
       <Footer/>
