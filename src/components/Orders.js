@@ -45,7 +45,7 @@ const Orders = () => {
     }
 
     try {
-      const response = await fetch(`http://13.235.208.227:8083/order/fetch?customerId=${customerId}`);
+      const response = await fetch(`http://13.235.208.227:8089/order/fetch?customerId=${customerId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch orders');
       }

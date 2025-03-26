@@ -10,7 +10,7 @@ const OrderDetails = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`http://13.235.208.227:8083/order/${orderId}`);
+        const response = await fetch(`http://13.235.208.227:8089/order/${orderId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch order details');
         }
