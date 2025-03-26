@@ -85,7 +85,7 @@ function Header() {
     e.preventDefault();
   
     try {
-      const response = await fetch(`http://13.200.154.116:8089/product/search?query=${query}`);
+      const response = await fetch(`http://13.235.208.227:8089/product/search?query=${query}`);
   
       if (!response.ok) {
         throw new Error(`Failed to fetch search results: ${response.statusText}`);
@@ -136,7 +136,7 @@ function Header() {
     }
   
     try {
-      const response = await fetch(`http://13.200.154.116:8089/product/search?query=${category}`);
+      const response = await fetch(`http://13.235.208.227:8089/product/search?query=${category}`);
   
       if (!response.ok) {
         throw new Error(`Failed to fetch category products: ${response.statusText}`);
