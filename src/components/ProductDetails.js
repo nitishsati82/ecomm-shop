@@ -14,7 +14,7 @@ function ProductDetails() {
   useEffect(() => {
     const fetchStockCount = async () => {
       try {
-        const response = await fetch(`http://13.235.208.227:8089/inventory/check/${product.id}`);
+        const response = await fetch(`https://13.235.208.227:8443/inventory/check/${product.id}`);
         const stock = await response.json();
         setStockCount(stock);
       } catch (error) {

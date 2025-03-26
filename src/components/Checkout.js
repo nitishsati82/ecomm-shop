@@ -69,7 +69,7 @@ const Checkout = () => {
     console.log('Order Data:', orderData); // Log the order data
 
     try {
-      const response = await fetch('http://13.235.208.227:8089/order/create', {
+      const response = await fetch('https://13.235.208.227:8443/order/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

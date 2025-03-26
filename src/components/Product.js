@@ -61,7 +61,7 @@ function Product() {
   // Fetch brands from Java API
   const fetchBrands = async () => {
     try {
-      const response = await fetch("http://13.235.208.227:8089/product/brands");
+      const response = await fetch("https://13.235.208.227:8443/product/brands");
       if (!response.ok) {
         throw new Error("Failed to fetch brands");
       }
@@ -112,7 +112,7 @@ function Product() {
     try {
       // Construct API query based on selected brands
       const query = updatedSelectedBrands.join(" ");
-      const response = await fetch(`http://localhost:8080/product/search?query=${query}`);
+      const response = await fetch(`https://13.235.208.227:8443/product/search?query=${query}`);
   
       if (!response.ok) {
         throw new Error(`Failed to fetch products: ${response.statusText}`);
@@ -133,7 +133,7 @@ function Product() {
       const updatedProducts = await Promise.all(
         products.map(async (product) => {
           try {
-            const stockResponse = await fetch(`http://localhost:8081/inventory/check/${product.id}`);
+            const stockResponse = await fetch(`https://13.235.208.227:8443/inventory/check/${product.id}`);
             if (!stockResponse.ok) {
               throw new Error(`Failed to fetch stock for product ID ${product.id}`);
             }
