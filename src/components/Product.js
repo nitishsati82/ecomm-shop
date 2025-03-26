@@ -30,7 +30,7 @@ function Product() {
       sortParam = "desc";
     }
       const response = await fetch(
-        `http://13.235.208.227:8089/product/api/products?page=${page}&size=${itemsPerPage}&sort=${sort}${brandQuery}`
+        `https://13.235.208.227:8443/product/api/products?page=${page}&size=${itemsPerPage}&sort=${sort}${brandQuery}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch products");
@@ -43,7 +43,7 @@ function Product() {
 
         // Fetch stock count for each product from inventory service
         const updatedProducts = await Promise.all(products.map(async (product) => {
-          const stockResponse = await fetch(`http://13.235.208.227:8089/api/inventory/check/${product.id}`);
+          const stockResponse = await fetch(`https://13.235.208.227:8443/api/inventory/check/${product.id}`);
           const stockCount = await stockResponse.json();
           return { ...product, stockCount };
         }));
