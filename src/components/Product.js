@@ -43,7 +43,7 @@ function Product() {
 
         // Fetch stock count for each product from inventory service
         const updatedProducts = await Promise.all(products.map(async (product) => {
-          const stockResponse = await fetch(`https://13.235.208.227:8443/api/inventory/check/${product.id}`);
+          const stockResponse = await fetch(`https://13.235.208.227:8443/inventory/check/${product.id}`);
           const stockCount = await stockResponse.json();
           return { ...product, stockCount };
         }));
