@@ -30,7 +30,7 @@ function Product() {
       sortParam = "desc";
     }
       const response = await fetch(
-        `http://13.235.208.227:8089/api/product/api/products?page=${page}&size=${itemsPerPage}&sort=${sort}${brandQuery}`
+        `https://cors-anywhere.herokuapp.com/http://13.235.208.227:8089/product/api/products?page=${page}&size=${itemsPerPage}&sort=${sort}${brandQuery}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch products");
